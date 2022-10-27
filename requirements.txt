@@ -1,0 +1,14 @@
+ipykernel==6.16.2
+jupyter==1.0.0
+jupyter-console==6.4.4
+jupyter-server==1.21.0
+jupyter_client==7.4.4
+jupyter_core==4.11.2
+notebook==6.5.1
+numpy==1.23.4
+pandas==1.5.1
+pyarrow==9.0.0
+requests==2.28.1
+scipy==1.9.3
+statsmodels==0.13.2
+tqdm==4.64.1
