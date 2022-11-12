@@ -1,5 +1,6 @@
 import pandas as pd
-df = pd.read_parquet('data/interim/spy_eod.parquet')
+
+df = pd.read_parquet("data/interim/spy_eod.parquet")
 df.head()
 
 #%%
@@ -8,15 +9,15 @@ df.head()
 # and also, for a start, let's not overcomplicate this with the Greeks
 
 cols = [
-    '[QUOTE_DATE]',
-    '[UNDERLYING_LAST]',
-    '[EXPIRE_DATE]',
-    '[DTE]',
-    '[STRIKE]',
-    '[P_BID]',  # assume we always operate on bid/ask prices
-    '[P_ASK]',
-    '[STRIKE_DISTANCE]',  # okay, perhaps these will be convenient
-    '[STRIKE_DISTANCE_PCT]',
+    "[QUOTE_DATE]",
+    "[UNDERLYING_LAST]",
+    "[EXPIRE_DATE]",
+    "[DTE]",
+    "[STRIKE]",
+    "[P_BID]",  # assume we always operate on bid/ask prices
+    "[P_ASK]",
+    "[STRIKE_DISTANCE]",  # okay, perhaps these will be convenient
+    "[STRIKE_DISTANCE_PCT]",
 ]
 
 df = df[cols]
@@ -33,4 +34,4 @@ df = df.dropna()
 
 #%%
 
-df.to_parquet('data/processed/spy_eod_put.parquet')
+df.to_parquet("data/processed/spy_eod_put.parquet")
