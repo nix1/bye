@@ -62,13 +62,25 @@ class Strategy:
         return value
 
 
-class SellWeeklyATMPuts(Strategy):
+class SellWeeklyPuts(Strategy):
     """
-    Sell ~weekly ATM puts, every ~Monday to expire on Friday.
+    Sell ~weekly (ATM by default) puts, every ~Monday to expire on Friday.
     Don't allow assignment. If the put is ITM at expiration (Friday),
     roll it to the next expiration, by buying it back
     and selling a new - now ATM - put.
     """
+
+    def __init__(self, market, capital=0, ideal_strike=1.0):
+        """
+        :param market: the market data
+        :param capital: the initial capital
+        :param ideal_strike: the ideal strike price, as a multiplier of the underlying price
+        """
+        super().__init__(market, capital)
+        self.ideal_strike = ideal_strike
+
+    def __repr__(self):
+        return f"SellWeeklyPuts({self.ideal_strike})"
 
     def _get_ideal_dte(self):
         # How many days until Friday?
@@ -80,14 +92,16 @@ class SellWeeklyATMPuts(Strategy):
 
         return ideal_dte
 
+    def _get_ideal_strike(self):
+        return self.market.underlying_last * self.ideal_strike
+
     def handle_expiring_positions(self, positions):
         assert (
             len(positions) == 1
         ), "This strategy only supports one open position at a time"
         for position in positions:
-            # If it's ITM, roll it to the next expiration
+            # If it's ITM, close it (effectively, roll to the next expiration)
             if position.option.is_itm(self.market.underlying_last):
-                # Buy it back and close the position
                 self.market.close(position)
             # else, it's OTM and assume the expiration is handled automatically elsewhere
 
@@ -97,5 +111,5 @@ class SellWeeklyATMPuts(Strategy):
         ), "This method should only be called if there are no open positions"
         # Write a new ATM put
         self.write_put(
-            ideal_strike=self.market.underlying_last, ideal_dte=self._get_ideal_dte()
+            ideal_strike=self._get_ideal_strike(), ideal_dte=self._get_ideal_dte()
         )

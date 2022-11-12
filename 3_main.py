@@ -21,7 +21,7 @@ df.head()
 #%%
 
 from src.markets import HistoricalMarket
-from src.strategies import SellWeeklyATMPuts
+from src.strategies import SellWeeklyPuts
 
 #%%
 
@@ -32,17 +32,22 @@ market = HistoricalMarket(
 
 # In a loop, advance the market by one day and run the strategy
 # On each day/trade, calculate the P&L, and keep track of the capital.
-strategy = SellWeeklyATMPuts(market, capital=0)
+strategies = [
+    SellWeeklyPuts(market, capital=0),  # ATM
+    SellWeeklyPuts(market, capital=0, ideal_strike=0.9),  # OTM
+    SellWeeklyPuts(market, capital=0, ideal_strike=1.1),  # ITM
+]
 
 pbar = tqdm(total=len(df["[QUOTE_DATE]"].unique()))
 
 while market.can_advance():
-    strategy.run()
+    for strategy in strategies:
+        strategy.run()
     market.tick()
     pbar.update(1)
     pbar.set_description(f"Current date: {market.current_date}")
+
     pbar.set_postfix(
-        wallet_value=strategy.get_current_value(),
         underlying_last=market.underlying_last,
-        open_positions=len(strategy.wallet.get_open_positions(market.current_date)),
+        **{f"{strategy}": strategy.get_current_value() for strategy in strategies},
     )
