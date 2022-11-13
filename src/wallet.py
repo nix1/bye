@@ -6,6 +6,9 @@ class Position:
         self.close_value = None
         self.closed_at = None
 
+    def __repr__(self):
+        return f"Position({self.option}, {self.quantity}, {self.cost})"
+
     def is_expired(self, date):
         return self.option.is_expired(date)
 

@@ -1,5 +1,6 @@
 import pandas as pd
 from tqdm import tqdm
+from collections import defaultdict
 
 df = pd.read_parquet("data/processed/spy_eod_put.parquet")
 df.head()
@@ -39,6 +40,8 @@ strategies = [
 ]
 
 pbar = tqdm(total=len(df["[QUOTE_DATE]"].unique()))
+
+values = defaultdict(list)
 
 while market.can_advance():
     for strategy in strategies:

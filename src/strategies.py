@@ -31,6 +31,15 @@ class Strategy:
     def handle_no_open_positions(self):
         pass
 
+    def get_expiring_positions(self):
+        return self.wallet.get_expiring_positions(self.market.current_date)
+
+    def get_open_positions(self):
+        return self.wallet.get_open_positions(self.market.current_date)
+
+    def get_expired_positions(self):
+        return self.wallet.get_expired_positions(self.market.current_date)
+
     def run(self):
         """
         Run the strategy on the market data
@@ -57,8 +66,16 @@ class Strategy:
         value = self.wallet.cash  # get the cash
         assert value is not None
         for position in self.wallet.get_open_positions(self.market.current_date):
-            # TODO: use market data instead to include the extrinsic value as well
-            value += position.option.intrinsic_value(self.market.underlying_last)
+            value += position.quantity * position.option.intrinsic_value(
+                self.market.underlying_last
+            )
+        return value
+
+    def get_current_market_value(self):
+        value = self.wallet.cash
+        assert value is not None
+        for position in self.wallet.get_open_positions(self.market.current_date):
+            value += position.quantity * self.market.close(position, dry_run=True)
         return value
 
 

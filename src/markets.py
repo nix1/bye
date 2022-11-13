@@ -39,7 +39,7 @@ class Market:
 
     def sell_to_open(self, ideal_strike, ideal_dte):
         """Write a put with the strike and dte closest to the ideal ones.
-        Sell the put at the current ask price.
+        Sell the put at the current bid price.
 
         Note that the caller is responsible for adding the position to the wallet,
         and for keeping track of available cash.
@@ -70,14 +70,14 @@ class Market:
         position = Position(
             option=put,
             quantity=-1,
-            cost=row["[P_ASK]"],
+            cost=row["[P_BID]"],
         )
 
         # Return the position
         return position
 
     def sell(self, option):
-        """Sell an option at the current ask price."""
+        """Sell an option at the current bid price."""
         quotes = self.get_quotes()
 
         # Find the row with the matching option
@@ -85,11 +85,11 @@ class Market:
         return quotes.loc[
             (quotes["[EXPIRE_DATE]"] == option.expiration)
             & (quotes["[STRIKE]"] == option.strike),
-            "[P_ASK]",
+            "[P_BID]",
         ].values[0]
 
     def buy(self, option):
-        """Buy an option at the current bid price.
+        """Buy an option at the current ask price.
 
         Note that this doesn't open or close any positions.
         The caller is responsible for adding the position to the wallet,
@@ -104,10 +104,10 @@ class Market:
         return quotes.loc[
             (quotes["[EXPIRE_DATE]"] == option.expiration)
             & (quotes["[STRIKE]"] == option.strike),
-            "[P_BID]",
+            "[P_ASK]",
         ].values[0]
 
-    def close(self, position: Position):
+    def close(self, position: Position, dry_run=False):
         """Close a position.
 
         :returns: The credit/debit from closing the position (NOT the profit/loss)
@@ -117,7 +117,8 @@ class Market:
         else:
             close_value = self.buy(position.option) * abs(position.quantity)
 
-        position.close(self.current_date, close_value)
+        if not dry_run:
+            position.close(self.current_date, close_value)
         return close_value
 
 

@@ -19,7 +19,8 @@ class Option:
     def intrinsic_value(self, underlying):
         if self.is_itm(underlying):
             # same for puts and calls
-            return -abs(self.strike - underlying)
+            # always positive, often needs to be multiplied by -1
+            return abs(self.strike - underlying)
         else:
             return 0
 
@@ -27,6 +28,9 @@ class Option:
 class Put(Option):
     def is_itm(self, underlying):
         return underlying < self.strike
+
+    def __repr__(self):
+        return f"Put({self.strike}, {self.expiration})"
 
 
 # class Call(Option):
