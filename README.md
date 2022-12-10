@@ -16,6 +16,8 @@ Let's change that!
 
 ## Current Status
 
+![flake8 and pytest](https://github.com/nix1/ohbye/actions/workflows/python-app.yml/badge.svg)
+
 🚧 **POC / Exploration** 🚧
 
 OHBYE is currently in its early stages of development,
