@@ -37,9 +37,12 @@ class TestSellWeeklyPuts:
         self.strategy.run()
 
         # Expectation: the strategy should sell 1 ~ATM put for 1.0
+        # - Starting cash = 0.0
+        # - Ideal DTE is 3, but no choice here, the closest one is 7
+        # - Ideal strike = 99.5, the closest one is 100
         self._check_strategy(
-            cash=1.0,
-            value=0.5,  # cash + intrinsic value of -0.5
-            market_value=-0.1,  # cash (bid value=1.0) - market ask value of 1.1
+            cash=1.0,  # ends up with 1.0 cash from the premium
+            value=0.5,  # 1.0 (cash)  -0.5 (simplified value of the short OOM put)
+            market_value=-0.1,  # 1.0 (cash) -1.1 (market ask value of the short OOM put)
             open_positions=1,
         )

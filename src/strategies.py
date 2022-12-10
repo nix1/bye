@@ -75,12 +75,10 @@ class Strategy:
         assert value is not None
         for position in self.wallet.get_open_positions(self.market.current_date):
             try:
-                value += position.quantity * self.market.close(position, dry_run=True)
+                value += self.market.close(position, dry_run=True)
             except IndexError:
                 # Can't find it, use intrinsic value instead
-                value += position.quantity * position.option.intrinsic_value(
-                    self.market.underlying_last
-                )
+                value += position.option.intrinsic_value(self.market.underlying_last)
         return value
 
 

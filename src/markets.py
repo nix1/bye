@@ -100,15 +100,17 @@ class HistoricalMarket:
             close_value = 0
         elif position.quantity > 0:
             close_value = self.sell(position.option) * position.quantity
+            assert (
+                close_value >= 0
+            ), "Close value should be positive when closing a short position"
         else:
             close_value = self.buy(position.option) * position.quantity
-            if close_value > 0:
-                print(position, position.option, position.quantity, close_value)
             assert (
                 close_value <= 0
             ), "Close value should be negative when closing a short position"
 
         if not dry_run:
+            # Actually close it (vs. just evaluating its value)
             position.close(self.current_date, close_value)
         return close_value
 
