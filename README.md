@@ -74,7 +74,8 @@ None of the following is planned to be supported by OHBYE:
   **Q:** Isn't this limiting?  
   **A:** Not really. Buy the put back just before assignment,
   and open a [synthetic long position](https://www.optionsplaybook.com/option-strategies/synthetic-long-stock/)
-  instead, if that's really what you want.
+  instead, if that's really what you want. Also, if your intention was to start selling covered calls,
+  notice that [they are effectively the same as selling naked puts](https://www.forbes.com/sites/baldwin/2012/07/18/options-explained-why-is-a-covered-call-equivalent-to-a-short-put/).
 
 ## Usage
 To use OHBYE, you will need to first initialize a virtual
