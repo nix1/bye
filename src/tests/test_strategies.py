@@ -1,11 +1,9 @@
+import pandas as pd
 import pytest
+from pytest import fixture
 
 from src.markets import HistoricalMarket
-
 from src.strategies import SellWeeklyPuts
-
-from pytest import fixture
-import pandas as pd
 
 
 @fixture

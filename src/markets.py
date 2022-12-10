@@ -11,6 +11,7 @@ class HistoricalMarket:
     Knows the current date and the current quotes.
     Responsible for executing trades.
     """
+
     def __init__(self, current_date, quotes_df):
         self.quotes_df = quotes_df
         self.current_date = current_date
@@ -92,7 +93,9 @@ class HistoricalMarket:
 
         :returns: The credit/debit from closing the position (NOT the profit/loss)
         """
-        if position.option.is_expiring(self.current_date) and not position.option.is_itm(self.underlying_last):
+        if position.option.is_expiring(
+            self.current_date
+        ) and not position.option.is_itm(self.underlying_last):
             # Expires worthless, no need to buy/sell
             close_value = 0
         elif position.quantity > 0:
@@ -101,27 +104,28 @@ class HistoricalMarket:
             close_value = self.buy(position.option) * position.quantity
             if close_value > 0:
                 print(position, position.option, position.quantity, close_value)
-            assert close_value <= 0, "Close value should be negative when closing a short position"
+            assert (
+                close_value <= 0
+            ), "Close value should be negative when closing a short position"
 
         if not dry_run:
             position.close(self.current_date, close_value)
         return close_value
 
-
     def get_quotes(self, date=None):
         """Get the quotes for a given date.
 
 
-            :returns: A Pandas dataframe of quotes
-                - [QUOTE_DATE] - The date of the quote
-                - [UNDERLYING_LAST] - The last price of the underlying
-                - [EXPIRE_DATE] - The expiration date of the option
-                - [DTE] - The days to expiration
-                - [STRIKE] - The strike price of the option
-                - [P_BID] - The bid price of the put
-                - [P_ASK] - The ask price of the put
-                - [STRIKE_DISTANCE] - The distance of the strike from the underlying
-                - [STRIKE_DISTANCE_PCT] - The distance of the strike from the underlying, as a percentage
+        :returns: A Pandas dataframe of quotes
+            - [QUOTE_DATE] - The date of the quote
+            - [UNDERLYING_LAST] - The last price of the underlying
+            - [EXPIRE_DATE] - The expiration date of the option
+            - [DTE] - The days to expiration
+            - [STRIKE] - The strike price of the option
+            - [P_BID] - The bid price of the put
+            - [P_ASK] - The ask price of the put
+            - [STRIKE_DISTANCE] - The distance of the strike from the underlying
+            - [STRIKE_DISTANCE_PCT] - The distance of the strike from the underlying, as a percentage
         """
         if date is None:
             if self.current_date is None:

@@ -1,8 +1,8 @@
 import itertools
+from collections import defaultdict
 
 import pandas as pd
 from tqdm import tqdm
-from collections import defaultdict
 
 df = pd.read_parquet("data/processed/spy_eod_put.parquet")
 df.head()
@@ -24,7 +24,7 @@ df.head()
 #%%
 
 from src.markets import HistoricalMarket
-from src.strategies import SellWeeklyPuts, SellMonthlyPuts
+from src.strategies import SellMonthlyPuts, SellWeeklyPuts
 
 #%%
 
@@ -58,9 +58,12 @@ while market.can_advance():
         strategy.run()
     market.tick()
     pbar.update(1)
-    pbar.set_description(market.current_date.strftime('%Y-%m-%d'))
+    pbar.set_description(market.current_date.strftime("%Y-%m-%d"))
 
     pbar.set_postfix(
         last=market.underlying_last,
-        **{f"{strategy}": strategy.get_current_market_value() for strategy in strategies},
+        **{
+            f"{strategy}": strategy.get_current_market_value()
+            for strategy in strategies
+        },
     )

@@ -1,6 +1,7 @@
-from src.markets import HistoricalMarket
 import pandas as pd
 from pytest import fixture
+
+from src.markets import HistoricalMarket
 
 
 @fixture
