@@ -1,6 +1,5 @@
 from abc import abstractmethod
 
-from src.options import Put
 from src.wallet import Wallet
 
 
@@ -75,7 +74,13 @@ class Strategy:
         value = self.wallet.cash
         assert value is not None
         for position in self.wallet.get_open_positions(self.market.current_date):
-            value += position.quantity * self.market.close(position, dry_run=True)
+            try:
+                value += position.quantity * self.market.close(position, dry_run=True)
+            except IndexError:
+                # Can't find it, use intrinsic value instead
+                value += position.quantity * position.option.intrinsic_value(
+                    self.market.underlying_last
+                )
         return value
 
 
@@ -87,7 +92,7 @@ class SellWeeklyPuts(Strategy):
     and selling a new - now ATM - put.
     """
 
-    def __init__(self, market, capital=0, ideal_strike=1.0):
+    def __init__(self, market, capital=0, ideal_strike=1.0, hold_the_strike=False):
         """
         :param market: the market data
         :param capital: the initial capital
@@ -95,9 +100,13 @@ class SellWeeklyPuts(Strategy):
         """
         super().__init__(market, capital)
         self.ideal_strike = ideal_strike
+        self.hold_the_strike = hold_the_strike
+        self.last_ideal_strike = None
 
     def __repr__(self):
-        return f"SellWeeklyPuts({self.ideal_strike})"
+        if self.hold_the_strike:
+            return f"WH({self.ideal_strike})"
+        return f"W({self.ideal_strike})"
 
     def _get_ideal_dte(self):
         # How many days until Friday?
@@ -110,7 +119,15 @@ class SellWeeklyPuts(Strategy):
         return ideal_dte
 
     def _get_ideal_strike(self):
-        return self.market.underlying_last * self.ideal_strike
+        strike = self.market.underlying_last * self.ideal_strike
+
+        if self.hold_the_strike:
+            if self.last_ideal_strike is not None:
+                if self.last_ideal_strike < strike:
+                    strike = self.last_ideal_strike
+            self.last_ideal_strike = strike
+
+        return strike
 
     def handle_expiring_positions(self, positions):
         assert (
@@ -130,3 +147,13 @@ class SellWeeklyPuts(Strategy):
         self.write_put(
             ideal_strike=self._get_ideal_strike(), ideal_dte=self._get_ideal_dte()
         )
+
+
+class SellMonthlyPuts(SellWeeklyPuts):
+    def _get_ideal_dte(self):
+        return 30
+
+    def __repr__(self):
+        if self.hold_the_strike:
+            return f"MH({self.ideal_strike})"
+        return f"M({self.ideal_strike})"

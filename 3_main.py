@@ -1,3 +1,5 @@
+import itertools
+
 import pandas as pd
 from tqdm import tqdm
 from collections import defaultdict
@@ -8,21 +10,21 @@ df.head()
 #%%
 
 # Okay, so backtesting should probably do something like this:
-# - [ ] Make an instance of a strategy
+# - [x] Make an instance of a strategy
 #    - [ ] Give it a starting capital
-# - [ ] For each day, run the strategy on the data for that day
+# - [x] For each day, run the strategy on the data for that day
 #    - [ ] The strategy should return a list of trades
-#    - [ ] The strategy should also return a list of positions
+#    - [x] The strategy should also return a list of positions
 # - [ ] For each trade, calculate the P&L, and keep track of the capital
-# - [ ] Allow the strategy to make trades
-#   - [ ] Write/Sell a put
-#   - [ ] Buy/Close a put
-#   - [ ] Roll a put to a different expiration date
+# - [x] Allow the strategy to make trades
+#   - [x] Write/Sell a put
+#   - [x] Buy/Close a put
+#   - [x] Roll a put to a different expiration date
 
 #%%
 
 from src.markets import HistoricalMarket
-from src.strategies import SellWeeklyPuts
+from src.strategies import SellWeeklyPuts, SellMonthlyPuts
 
 #%%
 
@@ -33,11 +35,19 @@ market = HistoricalMarket(
 
 # In a loop, advance the market by one day and run the strategy
 # On each day/trade, calculate the P&L, and keep track of the capital.
-strategies = [
-    SellWeeklyPuts(market, capital=0),  # ATM
-    SellWeeklyPuts(market, capital=0, ideal_strike=0.9),  # OTM
-    SellWeeklyPuts(market, capital=0, ideal_strike=1.1),  # ITM
-]
+strategies = []
+
+for StrategyClass, ideal_strike, hold_the_strike in itertools.product(
+    [SellWeeklyPuts, SellMonthlyPuts], [0.9, 1.0, 1.1], [False, True]
+):
+    strategies.append(
+        StrategyClass(
+            market,
+            capital=0,
+            ideal_strike=ideal_strike,
+            hold_the_strike=hold_the_strike,
+        )
+    )
 
 pbar = tqdm(total=len(df["[QUOTE_DATE]"].unique()))
 
@@ -48,9 +58,9 @@ while market.can_advance():
         strategy.run()
     market.tick()
     pbar.update(1)
-    pbar.set_description(f"Current date: {market.current_date}")
+    pbar.set_description(market.current_date.strftime('%Y-%m-%d'))
 
     pbar.set_postfix(
-        underlying_last=market.underlying_last,
-        **{f"{strategy}": strategy.get_current_value() for strategy in strategies},
+        last=market.underlying_last,
+        **{f"{strategy}": strategy.get_current_market_value() for strategy in strategies},
     )
