@@ -50,17 +50,13 @@ for root, dirs, files in (pbar := tqdm(list(os.walk(directory)))):
 # Concatenate all the dataframes into one
 df = pd.concat(df, ignore_index=True)
 
-#%%
-
 # Show what we have
-
-print(df.shape)
-print(df.head())
-
-# Show memory usage by column
-df.info(memory_usage="deep")
-
-#%%
+memory_usage_mb = df.memory_usage(deep=True).sum() / 1024**2
+print(f"Loaded {df.shape[0]:,} rows, {df.shape[1]} columns, {memory_usage_mb:.2f} MB")
 
 # Save the dataframe as a parquet file
 df.to_parquet("data/interim/spy_eod.parquet")
+memory_usage_mb = os.path.getsize("data/interim/spy_eod.parquet") / 1024**2
+print(
+    f"Saved {df.shape[0]:,} rows to data/interim/spy_eod.parquet,  {memory_usage_mb:.2f} MB"
+)

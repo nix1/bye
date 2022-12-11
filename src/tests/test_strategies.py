@@ -30,10 +30,10 @@ class TestSellWeeklyPuts:
 
     def test_opening_new_positions(self, quotes_1d_df):
         market = HistoricalMarket(
-            current_date=quotes_1d_df["[QUOTE_DATE]"].min(),
             quotes_df=quotes_1d_df,
         )
         self.strategy = SellWeeklyPuts(market)
+        market.__next__()
         self.strategy.run()
 
         # Expectation: the strategy should sell 1 ~ATM put for 1.0

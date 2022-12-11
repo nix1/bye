@@ -1,22 +1,47 @@
 from abc import abstractmethod
+from collections.abc import Iterator
 from datetime import timedelta
 
 from src.options import Put
 from src.wallet import Position
 
 
-class HistoricalMarket:
+class HistoricalMarket(Iterator):
     """
     Holds the current state of the market.
     Knows the current date and the current quotes.
     Responsible for executing trades.
     """
 
-    def __init__(self, current_date, quotes_df):
-        self.quotes_df = quotes_df
-        self.current_date = current_date
-        self.current_quotes = self.get_quotes(current_date)
-        self.underlying_last = self._get_underlying_last()
+    def __init__(self, quotes_df):
+        self._quotes_by_date = quotes_df.groupby(["[QUOTE_DATE]", "[UNDERLYING_LAST]"])
+        self._quotes_iterator = iter(self._quotes_by_date)
+        self.current_date = None
+        self.underlying_last = None
+        self.current_quotes = None
+
+    def __len__(self):
+        return self._quotes_by_date.ngroups
+
+    def __next__(self):
+        """
+        The expected way of using this class
+        is to iterate over its instance like:
+
+            for date, price, quotes_df in market:
+                do_something()
+
+        Returns a tuple of three elements:
+            current_date : pd.Timestamp,
+            underlying_last : float,
+            quotes_df : pd.DataFrame
+        """
+        key, quotes_df = next(self._quotes_iterator)
+        quotes_df = quotes_df.drop(columns=["[QUOTE_DATE]", "[UNDERLYING_LAST]"])
+        self.current_date = key[0]
+        self.underlying_last = key[1]
+        self.current_quotes = quotes_df
+        return key[0], key[1], quotes_df
 
     def sell_to_open(self, ideal_strike, ideal_dte):
         """Write a put with the strike and dte closest to the ideal ones.
@@ -28,7 +53,7 @@ class HistoricalMarket:
         :returns: A new Position object
         """
         # Find the closest option in the quotes dataframe
-        quotes_df = self.get_quotes().copy()
+        quotes_df = self.current_quotes.copy()
         quotes_df["_strike_distance"] = (quotes_df["[STRIKE]"] - ideal_strike).abs()
         quotes_df["_dte_distance"] = (quotes_df["[DTE]"] - ideal_dte).abs()
 
@@ -59,7 +84,7 @@ class HistoricalMarket:
 
     def sell(self, option):
         """Sell an option at the current bid price."""
-        quotes = self.get_quotes()
+        quotes = self.current_quotes
 
         # Find the row with the matching option
         # TODO: what if it's not found?
@@ -117,10 +142,7 @@ class HistoricalMarket:
     def get_quotes(self, date=None):
         """Get the quotes for a given date.
 
-
         :returns: A Pandas dataframe of quotes
-            - [QUOTE_DATE] - The date of the quote
-            - [UNDERLYING_LAST] - The last price of the underlying
             - [EXPIRE_DATE] - The expiration date of the option
             - [DTE] - The days to expiration
             - [STRIKE] - The strike price of the option
@@ -129,25 +151,4 @@ class HistoricalMarket:
             - [STRIKE_DISTANCE] - The distance of the strike from the underlying
             - [STRIKE_DISTANCE_PCT] - The distance of the strike from the underlying, as a percentage
         """
-        if date is None:
-            if self.current_date is None:
-                raise Exception("No current date set")
-            date = self.current_date
-        return self.quotes_df[self.quotes_df["[QUOTE_DATE]"] == date]
-
-    def _get_underlying_last(self):
-        return self.get_quotes()["[UNDERLYING_LAST]"].iloc[0]
-
-    def can_advance(self):
-        """Check if the market can advance to the next day."""
-        return self.current_date < self.quotes_df["[QUOTE_DATE]"].max()
-
-    def tick(self):
-        """Advance the market to the next working day."""
-        if not self.can_advance():
-            raise Exception("Cannot advance the market")
-        # Find the next working day
-        future_df = self.quotes_df[self.quotes_df["[QUOTE_DATE]"] > self.current_date]
-        self.current_date = future_df["[QUOTE_DATE]"].min()
-        # Get the underlying price
-        self.underlying_last = self._get_underlying_last()
+        return self.current_quotes
