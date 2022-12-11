@@ -1,12 +1,12 @@
-# OptionHodler's Backtesting Yield Estimator
+# Backtesting Yield Estimator for Stock&Index Options
 
-The goal of the OptionHodler's Backtesting Yield Estimator (_OHBYE_) is to provide
+The goal of the Backtesting Yield Estimator (_BYE_) is to provide
 a simple Pythonic way to define and test option trading strategies.
 This tool aims to allow investors to backtest their option strategies on historical data
 to estimate the expected yield of their strategies
 _(but see more info on its current state and limitations below)_.
 
-The focus is on testing long-term investment strategies. Write and HODL! 📈💰
+The focus is on testing long-term investment strategies. Just write and HODL! 📈💰
 
 ## Why?
 
@@ -16,11 +16,11 @@ Let's change that!
 
 ## Current Status
 
-![flake8 and pytest](https://github.com/nix1/ohbye/actions/workflows/python-app.yml/badge.svg)
+![flake8 and pytest](https://github.com/nix1/bye/actions/workflows/python-app.yml/badge.svg)
 
 🚧 **POC / Exploration** 🚧
 
-OHBYE is currently in its early stages of development,
+BYE is currently in its early stages of development,
 like a toddler learning to walk and talk. For now, it's just an experiment.
 But if you're interested in contributing, I'd love to have your help! 🙌
 Check if there are any recent contributions to see if the project is still active.
@@ -28,19 +28,19 @@ If not, it may have been abandoned. 🤷‍
 
 ## Features
 ### Implemented Features
-OHBYE currently only has limited support for SPY put-writing strategies
+BYE currently only has limited support for SPY put-writing strategies
 based on end-of-day historical data provided by [OptionsDX](https://www.optionsdx.com/).
 The author is not affiliated with OptionsDX in any way, I just found
 their data to be the most convenient to work with.
 
 ### Key Planned Features
-One of the key planned features of OHBYE is the ability
+One of the key planned features of BYE is the ability
 to generate semisynthetic option data based on real historical SPY and VIX values.
 This will make it much easier to test strategies without the need
 for actual historical option data (which might be heavy, expensive or perhaps
 lacking or even not available at all).
 
-Long-term, OHBYE might support the generation of purely synthetic data
+Long-term, BYE might support the generation of purely synthetic data
 to detach itself from what happened in the past,
 and therefore hopefully better evaluate strategies for the future.
 
@@ -48,7 +48,7 @@ The tool will also provide additional analysis and visualization of backtesting 
 to help users identify the most promising strategies.
 
 ## Project Goals
-The following goals are in scope for OHBYE:
+The following goals are in scope for BYE:
 
 * 📈 Allow backtesting of options strategies on historical data
   * Support for daily SPY data from OptionsDx
@@ -68,7 +68,7 @@ The following goals are in scope for OHBYE:
 that might have never occurred in the past.
 
 ### Anti-Goals
-None of the following is planned to be supported by OHBYE:
+None of the following is planned to be supported by BYE:
 * Backtesting on more frequent data. This is not a day-trading tool, it's for long-term strategies.
 * Exercise and assignment. Let's just focus on options.  
   **Q:** Isn't this limiting?  
@@ -78,7 +78,7 @@ None of the following is planned to be supported by OHBYE:
   notice that [they are effectively the same as selling naked puts](https://www.forbes.com/sites/baldwin/2012/07/18/options-explained-why-is-a-covered-call-equivalent-to-a-short-put/).
 
 ## Usage
-To use OHBYE, you will need to first initialize a virtual
+To use BYE, you will need to first initialize a virtual
 environment using the `requirements.txt` file provided. Like this:
 
     python3 -m venv venv
