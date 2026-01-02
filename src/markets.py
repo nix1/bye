@@ -1,6 +1,4 @@
-from abc import abstractmethod
 from collections.abc import Iterator
-from datetime import timedelta
 
 from src.options import Put
 from src.wallet import Position
