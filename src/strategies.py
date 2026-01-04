@@ -1,3 +1,9 @@
+"""
+Trading strategy implementations for backtesting.
+
+This module provides the abstract Strategy base class and concrete implementations
+like SellWeeklyPuts and SellMonthlyPuts for backtesting option trading strategies.
+"""
 from abc import abstractmethod
 
 from src.wallet import Wallet

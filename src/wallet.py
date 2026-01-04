@@ -1,3 +1,11 @@
+"""
+Position and wallet management for tracking trades and capital.
+
+This module provides the Position class for representing individual trades
+and the Wallet class for managing cash and tracking open/closed positions.
+"""
+
+
 class Position:
     def __init__(self, option, quantity, cost):
         self.option = option
