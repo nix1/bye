@@ -55,8 +55,8 @@ pytest -v
 ```
 
 **Test location**: All tests are in `src/tests/` directory.
-**Test files**: `test_markets.py`, `test_strategies.py`, `test_wallet.py`
-**Expected behavior**: All 5 tests should pass in under 1 second.
+**Test files**: `test_markets.py`, `test_options.py`, `test_strategies.py`, `test_wallet.py`
+**Expected behavior**: All 55 tests should pass in under 1 second.
 
 ### Running the Application
 
@@ -77,7 +77,7 @@ python 3_main.py      # Runs backtesting strategies
 ### Directory Structure
 
 ```
-/home/runner/work/bye/bye/
+./
 ├── .github/
 │   └── workflows/
 │       └── python-app.yml          # CI workflow (flake8 + pytest)
@@ -89,6 +89,7 @@ python 3_main.py      # Runs backtesting strategies
 │   ├── wallet.py                    # Wallet and Position classes
 │   └── tests/                       # All unit tests
 │       ├── test_markets.py
+│       ├── test_options.py
 │       ├── test_strategies.py
 │       └── test_wallet.py
 ├── 1_load.py                        # Step 1: Load raw data
@@ -96,6 +97,7 @@ python 3_main.py      # Runs backtesting strategies
 ├── 3_main.py                        # Step 3: Run backtesting
 ├── requirements.txt                 # Python dependencies (pinned versions)
 ├── README.md                        # User documentation
+├── .gitignore                       # Git ignore file
 └── LICENSE                          # MIT-style license
 ```
 
@@ -139,12 +141,12 @@ python 3_main.py      # Runs backtesting strategies
 **Testing Approach**:
 - Fixtures for sample quote DataFrames
 - Focus on core functionality (market iteration, position opening)
-- Limited test coverage (only 5 tests total)
+- Comprehensive test coverage (55 tests total)
 
 ### Key Facts for Making Changes
 
 1. **Data Flow**: Raw data (txt) -> interim (parquet) -> processed (parquet) -> backtesting results
-2. **No .gitignore**: Repository has no root .gitignore file. Be careful not to commit venv/, data/, or cache files.
+2. **Git Ignore**: Repository has a .gitignore file that excludes venv/, data/, and cache files.
 3. **Date Handling**: Uses pandas timestamps throughout. Market quotes grouped by `[QUOTE_DATE]` and `[UNDERLYING_LAST]`.
 4. **Column Naming**: OptionsDX data uses bracketed column names like `[STRIKE]`, `[P_BID]`, `[EXPIRE_DATE]`.
 5. **Position Convention**: Negative quantity = short position, positive = long position.
@@ -170,7 +172,7 @@ python 3_main.py      # Runs backtesting strategies
 Before submitting changes:
 1. ✅ Activate virtual environment
 2. ✅ Run `flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics` (must have zero errors)
-3. ✅ Run `pytest -v` (all 5 tests must pass)
+3. ✅ Run `pytest -v` (all 55 tests must pass)
 4. ✅ If modifying core logic, test with sample data if available
 5. ✅ Ensure no venv/, data/, or cache files are staged for commit
 
@@ -180,7 +182,7 @@ These instructions have been validated by:
 - Creating a fresh virtual environment
 - Installing all dependencies (with setuptools workaround)
 - Running both flake8 checks (0 errors, expected warnings)
-- Running pytest (5/5 tests passed in 0.67s)
+- Running pytest (55/55 tests passed in <0.5s)
 - Exploring all source files and configuration
 
 **Only search for additional information if these instructions are incomplete or found to be incorrect.**

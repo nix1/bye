@@ -1,3 +1,9 @@
+"""
+Historical market data management and trading execution.
+
+This module provides the HistoricalMarket class which manages market state,
+iterates through historical quotes, and executes trades (buy, sell, open, close positions).
+"""
 from collections.abc import Iterator
 
 from src.options import Put

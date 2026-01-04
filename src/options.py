@@ -1,3 +1,10 @@
+"""
+Option contract classes for trading strategies.
+
+This module provides the abstract Option base class and the Put implementation
+for representing option contracts with strike prices, expiration dates, and
+methods for determining in-the-money status and intrinsic value.
+"""
 from abc import abstractmethod
 
 

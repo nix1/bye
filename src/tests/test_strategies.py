@@ -125,8 +125,8 @@ class TestSellWeeklyPuts:
         assert len(strategy.wallet.positions) == 1
         assert strategy.wallet.cash > initial_cash  # Received premium
 
-    def test_get_ideal_dte_monday(self, quotes_1d_df):
-        """Test ideal DTE calculation on Monday"""
+    def test_get_ideal_dte_wednesday(self, quotes_1d_df):
+        """Test ideal DTE calculation on Wednesday"""
         market = HistoricalMarket(quotes_df=quotes_1d_df)
         strategy = SellWeeklyPuts(market)
         next(market)
